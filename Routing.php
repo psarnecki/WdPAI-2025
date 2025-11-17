@@ -3,10 +3,18 @@
 require_once 'src/controllers/SecurityController.php';
 require_once 'src/controllers/DashboardController.php';
 
-// TODO musimy zapewnic ze utworzony obiekt ma tylko jedna isntancje - wzorzec singleton
-// TODO 2 /dashboard -- wszystkie dane
-// /dashboard/12343 -- dane konkretnego uzytkownika REGEX
 class Routing {
+
+    private static ?Routing $instance = null;
+
+    private function __construct() {}
+
+    public static function getInstance(): Routing {
+        if (self::$instance === null) {
+            self::$instance = new Routing();
+        }
+        return self::$instance;
+    }
 
     public static $routes = [
         "login" => [
@@ -23,7 +31,17 @@ class Routing {
         ]
     ];
 
-    public static function run($path) {
+    public function run($path) {
+
+        if (preg_match('/^dashboard\/(\d+)$/', $path, $matches)) {
+            $controller = Routing::$routes["dashboard"]["controller"];
+            $action = Routing::$routes["dashboard"]["action"];
+
+            $controllerObj = new $controller;
+            $controllerObj->$action((int)$matches[1]);
+            return;
+        }
+
         switch($path) {
             case 'dashboard':
             case 'login':
@@ -32,9 +50,7 @@ class Routing {
                 $action = Routing::$routes[$path]['action'];
 
                 $controllerObj = new $controller;
-                $id = null;
-
-                $controllerObj->$action($id);
+                $controllerObj->$action(null);
                 break;
             default:
                 include 'public/views/404.html';
