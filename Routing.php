@@ -28,6 +28,10 @@ class Routing {
         "dashboard" => [
             "controller" => "DashboardController",
             "action" => "index"
+        ],
+        "search-cards" => [
+            "controller" => "DashboardController",
+            "action" => "search"
         ]
     ];
 
@@ -46,6 +50,7 @@ class Routing {
             case 'dashboard':
             case 'login':
             case 'register':
+            case 'search-cards':
                 $controller = Routing::$routes[$path]['controller'];
                 $action = Routing::$routes[$path]['action'];
 
